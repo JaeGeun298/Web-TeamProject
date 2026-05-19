@@ -61,10 +61,10 @@
 ## 프로젝트 구조 (예정)
 
 ```
-TripLedger/
+TripCalendar/
 ├── src/
 │   ├── main/
-│   │   ├── java/com/example/tripled/
+│   │   ├── java/com/example/TripCalendar/
 │   │   │   ├── user/          # 사용자 (회원가입, 로그인)
 │   │   │   ├── trip/          # 여행 그룹
 │   │   │   ├── fund/          # 공금 납입
