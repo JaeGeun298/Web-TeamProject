@@ -1,0 +1,50 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/">TripCalendar</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">홈</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="경로입력">여행 관리</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="경로입력">지출 관리</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="경로입력">정산</a>
+                </li>
+            </ul>
+
+
+            <ul class="navbar-nav ms-auto align-items-center">
+                {{#loginUser}}
+                <li class="nav-item me-2">
+                    <span class="navbar-text">{{username}}</span>
+                </li>
+                <li class="nav-item">
+                    <form action="/auth/logout" method="post" class="d-inline m-0">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">로그아웃</button>
+                    </form>
+                </li>
+                {{/loginUser}}
+
+                {{^loginUser}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/auth/login">로그인</a>
+                </li>
+                {{/loginUser}}
+            </ul>
+        </div>
+    </div>
+</nav>
