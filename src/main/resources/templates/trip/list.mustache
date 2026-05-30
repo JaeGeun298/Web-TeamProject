@@ -1,23 +1,38 @@
 {{> layouts/header}}
+{{> layouts/gnb}}
 
-<h2>내 여행 목록</h2>
-<a href="/trips/new">+ 여행 추가</a>
-
-{{#trips}}
-    <div>
-        <h3>{{title}}</h3>
-        <p>{{startDate}} ~ {{endDate}}</p>
-        <p>{{description}}</p>
-        <a href="/trips/{{id}}">상세보기</a>
-        <a href="/trips/{{id}}/edit">수정</a>
-        <form action="/trips/{{id}}/delete" method="post">
-            <button type="submit">삭제</button>
-        </form>
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">내 여행 목록</h2>
+        <a href="/trips/new" class="btn btn-primary">+ 여행 추가</a>
     </div>
-{{/trips}}
 
-{{^trips}}
-    <p>여행이 없습니다.</p>
-{{/trips}}
+    {{#trips}}
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title fw-bold mb-1">{{title}}</h5>
+                    <p class="text-muted mb-0">{{startDate}} ~ {{endDate}}</p>
+                    <p class="mb-0">{{description}}</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="/trips/{{id}}" class="btn btn-outline-primary btn-sm">상세보기</a>
+                    <a href="/trips/{{id}}/edit" class="btn btn-outline-secondary btn-sm">수정</a>
+                    <form action="/trips/{{id}}/delete" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/trips}}
+
+    {{^trips}}
+    <div class="text-center py-5 text-muted">
+        <p>여행이 없습니다. 새 여행을 추가해보세요!</p>
+    </div>
+    {{/trips}}
+</div>
 
 {{> layouts/footer}}

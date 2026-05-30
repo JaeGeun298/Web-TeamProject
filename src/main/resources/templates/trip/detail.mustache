@@ -1,30 +1,54 @@
 {{> layouts/header}}
+{{> layouts/gnb}}
 
-<h2>{{trip.title}}</h2>
-<p>{{trip.startDate}} ~ {{trip.endDate}}</p>
-<p>{{trip.description}}</p>
-
-<a href="/trips/{{trip.id}}/edit">수정</a>
-<form action="/trips/{{trip.id}}/delete" method="post">
-    <button type="submit">삭제</button>
-</form>
-
-<h3>참여 멤버</h3>
-{{#members}}
-    <div>
-        <span>{{user.username}}</span>
-        <form action="/trips/{{tripId}}/members/{{id}}/delete" method="post">
-            <button type="submit">탈퇴</button>
-        </form>
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">{{trip.title}}</h2>
+            <p class="text-muted mb-0">{{trip.startDate}} ~ {{trip.endDate}}</p>
+            <p class="mb-0">{{trip.description}}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/trips/{{trip.id}}/edit" class="btn btn-outline-secondary btn-sm">수정</a>
+            <form action="/trips/{{trip.id}}/delete" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
+            </form>
+        </div>
     </div>
-{{/members}}
 
-<h3>멤버 초대</h3>
-<form action="/trips/{{trip.id}}/members" method="post">
-    <input type="text" name="username" placeholder="유저 아이디 입력"/>
-    <button type="submit">초대</button>
-</form>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light fw-bold">참여 멤버</div>
+                <ul class="list-group list-group-flush">
+                    {{#members}}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{user.username}}</span>
+                        <form action="/trips/{{tripId}}/members/{{id}}/delete" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">탈퇴</button>
+                        </form>
+                    </li>
+                    {{/members}}
+                </ul>
+            </div>
+        </div>
 
-<a href="/trips/{{trip.id}}/funds">공금 현황</a>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light fw-bold">멤버 초대</div>
+                <div class="card-body">
+                    <form action="/trips/{{trip.id}}/members" method="post" class="d-flex gap-2">
+                        <input type="text" name="username" class="form-control" placeholder="유저 아이디 입력"/>
+                        <button type="submit" class="btn btn-primary text-nowrap">초대</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="/trips/{{trip.id}}/funds" class="btn btn-outline-primary">공금 현황 보기</a>
+    </div>
+</div>
 
 {{> layouts/footer}}

@@ -1,33 +1,74 @@
 {{> layouts/header}}
+{{> layouts/gnb}}
 
-<h2>공금 현황</h2>
-<p>총 납입액: {{totalFund}}원</p>
-
-<h3>납입 내역</h3>
-{{#funds}}
-    <div>
-        <span>{{user.username}}</span>
-        <span>{{amount}}원</span>
-        <span>{{paidDate}}</span>
-        <span>{{note}}</span>
-        <form action="/trips/{{tripId}}/funds/{{id}}/delete" method="post">
-            <button type="submit">삭제</button>
-        </form>
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">공금 현황</h2>
+        <a href="/trips/{{tripId}}" class="btn btn-outline-secondary">← 여행으로 돌아가기</a>
     </div>
-{{/funds}}
 
-{{^funds}}
-    <p>납입 내역이 없습니다.</p>
-{{/funds}}
+    <div class="card shadow-sm mb-4 text-center">
+        <div class="card-body">
+            <h4 class="fw-bold text-primary">총 납입액: {{totalFund}}원</h4>
+        </div>
+    </div>
 
-<h3>공금 납입</h3>
-<form action="/trips/{{tripId}}/funds" method="post">
-    <input type="number" name="amount" placeholder="금액" required/>
-    <input type="date" name="paidDate" required/>
-    <input type="text" name="note" placeholder="메모 (선택)"/>
-    <button type="submit">납입</button>
-</form>
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-light fw-bold">납입 내역</div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 text-center align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>납입자</th>
+                    <th>금액</th>
+                    <th>날짜</th>
+                    <th>메모</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#funds}}
+                <tr>
+                    <td>{{user.username}}</td>
+                    <td>{{amount}}원</td>
+                    <td>{{paidDate}}</td>
+                    <td>{{note}}</td>
+                    <td>
+                        <form action="/trips/{{tripId}}/funds/{{id}}/delete" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                        </form>
+                    </td>
+                </tr>
+                {{/funds}}
+                {{^funds}}
+                <tr>
+                    <td colspan="5" class="py-4 text-muted">납입 내역이 없습니다.</td>
+                </tr>
+                {{/funds}}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<a href="/trips/{{tripId}}">← 여행으로 돌아가기</a>
+    <h3 class="fw-bold mb-3">공금 납입</h3>
+    <div class="card shadow-sm bg-light">
+        <div class="card-body p-4">
+            <form action="/trips/{{tripId}}/funds" method="post" class="row g-3">
+                <div class="col-md-3">
+                    <input type="number" name="amount" class="form-control" placeholder="금액" required/>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="paidDate" class="form-control" required/>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="note" class="form-control" placeholder="메모 (선택)"/>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary">납입</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 {{> layouts/footer}}

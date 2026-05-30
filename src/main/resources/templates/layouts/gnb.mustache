@@ -18,11 +18,21 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-muted" href="/expenses/trip/{{#tripId}}{{tripId}}{{/tripId}}{{^tripId}}1{{/tripId}}">지출 관리</a>
+                    {{#tripId}}
+                    <a class="nav-link text-muted" href="/expenses/trip/{{tripId}}">지출 관리</a>
+                    {{/tripId}}
+                    {{^tripId}}
+                    <a class="nav-link text-muted" style="opacity:0.4; pointer-events:none;">지출 관리</a>
+                    {{/tripId}}
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-muted" href="/settlements/trip/{{#tripId}}{{tripId}}{{/tripId}}{{^tripId}}1{{/tripId}}">정산</a>
+                    {{#tripId}}
+                    <a class="nav-link text-muted" href="/settlements/trip/{{tripId}}">정산</a>
+                    {{/tripId}}
+                    {{^tripId}}
+                    <a class="nav-link text-muted" style="opacity:0.4; pointer-events:none;">정산</a>
+                    {{/tripId}}
                 </li>
             </ul>
 

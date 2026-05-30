@@ -114,13 +114,15 @@
                     failure: function () {
                         console.error('캘린더 이벤트 로드 실패');
                     }
-                },
-                {
-                    url: '/api/expenses/trip/{{#tripId}}{{tripId}}{{/tripId}}{{^tripId}}1{{/tripId}}',
+                }
+                {{#tripId}}
+                ,{
+                    url: '/api/expenses/trip/{{tripId}}',
                     failure: function () {
                         console.error('지출 이벤트 로드 실패');
                     }
                 }
+                {{/tripId}}
             ],
 
             eventRender: function (info) {
@@ -130,17 +132,20 @@
             },
 
             dateClick: function (info) {
-                window.location.href = '/expenses/trip/{{#tripId}}{{tripId}}{{/tripId}}{{^tripId}}1{{/tripId}}?date=' + info.dateStr;
+                {{#tripId}}
+                window.location.href = '/expenses/trip/{{tripId}}?date=' + info.dateStr;
+                {{/tripId}}
             },
 
             eventClick: function (info) {
-                // Get local YYYY-MM-DD string
-                var localDate = info.event.start.getFullYear() + '-' + 
-                                String(info.event.start.getMonth() + 1).padStart(2, '0') + '-' + 
+                var localDate = info.event.start.getFullYear() + '-' +
+                                String(info.event.start.getMonth() + 1).padStart(2, '0') + '-' +
                                 String(info.event.start.getDate()).padStart(2, '0');
-                
+
                 if (info.event.backgroundColor === '#ff9f89') {
-                    window.location.href = '/expenses/trip/{{#tripId}}{{tripId}}{{/tripId}}{{^tripId}}1{{/tripId}}?date=' + localDate;
+                    {{#tripId}}
+                    window.location.href = '/expenses/trip/{{tripId}}?date=' + localDate;
+                    {{/tripId}}
                 } else {
                     window.location.href = '/expenses/trip/' + info.event.id;
                 }
