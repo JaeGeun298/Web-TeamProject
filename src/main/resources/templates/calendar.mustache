@@ -92,48 +92,58 @@
 <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@4.4.2/locales/ko.js"></script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar');
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      plugins: ['dayGrid', 'interaction'],
-      locale: 'ko',
-      height: 'parent',
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            plugins: ['dayGrid', 'interaction'],
+            locale: 'ko',
+            height: 'parent',
 
-      header: {
-        left:   'prev,next',
-        center: 'title',
-        right:  ''
-      },
+            header: {
+                left:   'prev,next',
+                center: 'title',
+                right:  ''
+            },
 
-      defaultView: 'dayGridMonth',
+            defaultView: 'dayGridMonth',
 
-      events: {
-        url: '/api/trips/calendar',
-        failure: function () {
-          console.error('캘린더 이벤트 로드 실패');
-        }
-      },
+            eventSources: [
+                {
+                    url: '/api/trips/calendar',
+                    failure: function () {
+                        console.error('캘린더 이벤트 로드 실패');
+                    }
+                },
+                {
+                    url: '/api/expenses/trip/{{#tripId}}{{tripId}}{{/tripId}}{{^tripId}}1{{/tripId}}',
+                    failure: function () {
+                        console.error('지출 이벤트 로드 실패');
+                    }
+                }
+            ],
 
-      eventRender: function (info) {
-        info.el.classList.add('event-trip');
-      },
+            eventRender: function (info) {
+                if (!info.event.backgroundColor || info.event.backgroundColor !== '#ff9f89') {
+                    info.el.classList.add('event-trip');
+                }
+            },
 
-      //  날짜 클릭 시 여행 추가
-        //  페이지 경로 넣어주세요.
-       dateClick: function (info) {
-         window.location.href = '여기에 경로 입력?date=' + info.dateStr;
-       },
+            dateClick: function (info) {
+                window.location.href = '/expenses/trip/{{#tripId}}{{tripId}}{{/tripId}}{{^tripId}}1{{/tripId}}?date=' + info.dateStr;
+            },
 
-      // 여행 이벤트 클릭 시 여행 상세
-        // 페이지 경로 넣어주세요
-       eventClick: function (info) {
-         window.location.href = '여기에 경로 입력/' + info.event.id;
-       }
+            eventClick: function (info) {
+                if (info.event.backgroundColor === '#ff9f89') {
+                    window.location.href = '/expenses/trip/{{#tripId}}{{tripId}}{{/tripId}}{{^tripId}}1{{/tripId}}?date=' + info.event.start.toISOString().split('T')[0];
+                } else {
+                    window.location.href = '/expenses/trip/' + info.event.id;
+                }
+            }
+        });
+
+        calendar.render();
     });
-
-    calendar.render();
-  });
 </script>
 
 {{>layouts/footer}}

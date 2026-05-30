@@ -14,18 +14,17 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-muted" href="경로입력">여행 관리</a>
+                    <a class="nav-link text-muted" href="/trips">여행 관리</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-muted" href="경로입력">지출 관리</a>
+                    <a class="nav-link text-muted" href="/expenses/trip/{{#tripId}}{{tripId}}{{/tripId}}{{^tripId}}1{{/tripId}}">지출 관리</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-muted" href="경로입력">정산</a>
+                    <a class="nav-link text-muted" href="/settlements/trip/{{#tripId}}{{tripId}}{{/tripId}}{{^tripId}}1{{/tripId}}">정산</a>
                 </li>
             </ul>
-
 
             <ul class="navbar-nav ms-auto align-items-center">
                 {{#loginUser}}
