@@ -36,9 +36,8 @@ public class TripController {
 
     // 여행 생성 페이지
     @GetMapping("/new")
-    public String createForm(HttpSession session, Model model) {
-        getLoginUser(session); // 로그인 체크
-        model.addAttribute("tripForm", new TripFormDTO());
+    public String createForm(HttpSession session) {
+        getLoginUser(session);
         return "trip/form";
     }
 
@@ -65,15 +64,15 @@ public class TripController {
     public String editForm(@PathVariable Long id, HttpSession session, Model model) {
         getLoginUser(session);
         Trip trip = tripService.getTrip(id);
-        TripFormDTO form = new TripFormDTO();
-        form.setTitle(trip.getTitle());
-        form.setStartDate(trip.getStartDate());
-        form.setEndDate(trip.getEndDate());
-        form.setDescription(trip.getDescription());
-        model.addAttribute("tripForm", form);
+        model.addAttribute("title", trip.getTitle());
+        model.addAttribute("startDate", trip.getStartDate());
+        model.addAttribute("endDate", trip.getEndDate());
+        model.addAttribute("description", trip.getDescription());
         model.addAttribute("tripId", id);
         return "trip/form";
     }
+
+
 
     // 여행 수정 처리
     @PostMapping("/{id}/edit")
