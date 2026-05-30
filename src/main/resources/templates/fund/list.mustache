@@ -1,0 +1,33 @@
+{{> layouts/header}}
+
+<h2>공금 현황</h2>
+<p>총 납입액: {{totalFund}}원</p>
+
+<h3>납입 내역</h3>
+{{#funds}}
+    <div>
+        <span>{{user.username}}</span>
+        <span>{{amount}}원</span>
+        <span>{{paidDate}}</span>
+        <span>{{note}}</span>
+        <form action="/trips/{{tripId}}/funds/{{id}}/delete" method="post">
+            <button type="submit">삭제</button>
+        </form>
+    </div>
+{{/funds}}
+
+{{^funds}}
+    <p>납입 내역이 없습니다.</p>
+{{/funds}}
+
+<h3>공금 납입</h3>
+<form action="/trips/{{tripId}}/funds" method="post">
+    <input type="number" name="amount" placeholder="금액" required/>
+    <input type="date" name="paidDate" required/>
+    <input type="text" name="note" placeholder="메모 (선택)"/>
+    <button type="submit">납입</button>
+</form>
+
+<a href="/trips/{{tripId}}">← 여행으로 돌아가기</a>
+
+{{> layouts/footer}}

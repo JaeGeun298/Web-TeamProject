@@ -52,10 +52,11 @@ public class TripController {
     // 여행 대시보드
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, HttpSession session, Model model) {
-        getLoginUser(session); // 로그인 체크
+        getLoginUser(session);
         Trip trip = tripService.getTrip(id);
         model.addAttribute("trip", trip);
         model.addAttribute("members", trip.getTripMembers());
+        model.addAttribute("tripId", id); // 추가
         return "trip/detail";
     }
 
@@ -69,7 +70,7 @@ public class TripController {
         model.addAttribute("endDate", trip.getEndDate());
         model.addAttribute("description", trip.getDescription());
         model.addAttribute("tripId", id);
-        return "trip/form";
+        return "trip/edit"; // form → edit으로 변경
     }
 
 

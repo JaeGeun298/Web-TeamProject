@@ -1,12 +1,12 @@
 {{> layouts/header}}
 
-<h2>{{#tripId}}여행 수정{{/tripId}}{{^tripId}}여행 생성{{/tripId}}</h2>
+<h2>여행 생성</h2>
 
-<form action="{{#tripId}}/trips/{{tripId}}/edit{{/tripId}}{{^tripId}}/trips{{/tripId}}" method="post">
-    <input type="text" name="title" value="" placeholder="여행 이름" required/>
-    <input type="date" name="startDate" value=""/>
-    <input type="date" name="endDate" value=""/>
-    <input type="text" name="description" value="" placeholder="설명"/>
+<form action="/trips" method="post">
+    <input type="text" name="title" placeholder="여행 이름" required/>
+    <input type="date" name="startDate"/>
+    <input type="date" name="endDate"/>
+    <input type="text" name="description" placeholder="설명"/>
     <button type="submit">저장</button>
 </form>
 

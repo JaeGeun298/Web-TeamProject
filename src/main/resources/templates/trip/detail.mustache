@@ -13,7 +13,7 @@
 {{#members}}
     <div>
         <span>{{user.username}}</span>
-        <form action="/trips/{{trip.id}}/members/{{id}}/delete" method="post">
+        <form action="/trips/{{tripId}}/members/{{id}}/delete" method="post">
             <button type="submit">탈퇴</button>
         </form>
     </div>
@@ -24,5 +24,7 @@
     <input type="text" name="username" placeholder="유저 아이디 입력"/>
     <button type="submit">초대</button>
 </form>
+
+<a href="/trips/{{trip.id}}/funds">공금 현황</a>
 
 {{> layouts/footer}}
