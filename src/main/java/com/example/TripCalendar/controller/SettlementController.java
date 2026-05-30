@@ -1,10 +1,13 @@
 package com.example.TripCalendar.controller;
 
+import com.example.TripCalendar.entity.Trip;
 import com.example.TripCalendar.service.SettlementService;
+import com.example.TripCalendar.service.TripService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
@@ -19,9 +22,11 @@ import java.util.stream.Collectors;
 public class SettlementController {
 
     private final SettlementService settlementService;
+    private final TripService tripService;
 
-    public SettlementController(SettlementService settlementService) {
+    public SettlementController(SettlementService settlementService, TripService tripService) {
         this.settlementService = settlementService;
+        this.tripService = tripService;
     }
 
     @GetMapping("/trip/{tripId}")
@@ -31,18 +36,32 @@ public class SettlementController {
                                       Model model) {
 
         String sessionKey = "trip_" + tripId + "_members";
-        if (totalMembers != null) {
-            session.setAttribute(sessionKey, totalMembers);
-        } else {
+        Trip trip = tripService.getTrip(tripId);
+        boolean isSettled = trip.isSettled();
+
+        // Calculate with dummy/temporary count to get payerCount first if needed, 
+        // or just calculate settlement twice if necessary.
+        // Actually, we can get payerCount from the service result.
+        
+        if (totalMembers == null) {
             Integer cachedMembers = (Integer) session.getAttribute(sessionKey);
-            totalMembers = (cachedMembers != null) ? cachedMembers : 1;
+            if (cachedMembers != null) {
+                totalMembers = cachedMembers;
+            } else {
+                // If no session and no param, use payerCount as default
+                Map<String, Object> initialData = settlementService.calculateSettlement(tripId, 1);
+                int payerCount = (int) initialData.get("payerCount");
+                totalMembers = (payerCount > 0) ? payerCount : 1;
+                session.setAttribute(sessionKey, totalMembers);
+            }
+        } else {
+            session.setAttribute(sessionKey, totalMembers);
         }
 
         Map<String, Object> settlementData = settlementService.calculateSettlement(tripId, totalMembers);
 
         @SuppressWarnings("unchecked")
         Map<String, Integer> balances = (Map<String, Integer>) settlementData.get("balances");
-
         List<Map<String, Object>> balanceList = balances.entrySet().stream()
                 .map(entry -> {
                     Map<String, Object> map = new HashMap<>();
@@ -51,17 +70,40 @@ public class SettlementController {
                     return map;
                 }).collect(Collectors.toList());
 
+        @SuppressWarnings("unchecked")
+        Map<String, Integer> categoryTotals = (Map<String, Integer>) settlementData.get("categoryTotals");
+        List<Map<String, Object>> categoryList = categoryTotals.entrySet().stream()
+                .map(entry -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("key", entry.getKey());
+                    map.put("value", entry.getValue());
+                    return map;
+                }).collect(Collectors.toList());
+
         Object loginUser = session.getAttribute("loginUser");
-        if (loginUser != null) {
-            model.addAttribute("loginUser", loginUser);
-        }
+        if (loginUser != null) model.addAttribute("loginUser", loginUser);
 
         model.addAttribute("totalExpense", settlementData.get("totalExpense"));
         model.addAttribute("perPerson", settlementData.get("perPerson"));
         model.addAttribute("settlements", balanceList);
+        model.addAttribute("categorySummaries", categoryList);
+        model.addAttribute("allExpenses", settlementData.get("expenses"));
         model.addAttribute("totalMembers", totalMembers);
         model.addAttribute("tripId", tripId);
+        model.addAttribute("isSettled", isSettled);
 
         return "settlement/result";
+    }
+
+    @PostMapping("/trip/{tripId}/settle")
+    public String markAsSettled(@PathVariable Long tripId) {
+        tripService.toggleSettled(tripId, true);
+        return "redirect:/settlements/trip/" + tripId;
+    }
+
+    @PostMapping("/trip/{tripId}/unsettle")
+    public String markAsUnsettled(@PathVariable Long tripId) {
+        tripService.toggleSettled(tripId, false);
+        return "redirect:/settlements/trip/" + tripId;
     }
 }

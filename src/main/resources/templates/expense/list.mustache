@@ -1,7 +1,61 @@
 {{> layouts/header}}
 {{> layouts/gnb}}
 <div class="container mt-5 mb-5">
-    <h2 class="mb-4 fw-bold">지출 내역 목록 {{#selectedDate}}({{selectedDate}}){{/selectedDate}}</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">지출 내역 목록 {{#selectedDate}}({{selectedDate}}){{/selectedDate}}</h2>
+        <div class="d-flex gap-2">
+            <a href="/trips/{{tripId}}" class="btn btn-outline-primary">
+                <i class="bi bi-info-circle"></i> 여행 정보
+            </a>
+            <a href="/settlements/trip/{{tripId}}" class="btn btn-success">
+                <i class="bi bi-calculator"></i> 정산 결과 보기
+            </a>
+        </div>
+    </div>
+
+    <!-- 필터 및 요약 섹션 -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form action="/expenses/trip/{{tripId}}" method="get" class="row g-2 align-items-center">
+                <div class="col-auto">
+                    <input type="date" name="date" class="form-control" value="{{#selectedDate}}{{selectedDate}}{{/selectedDate}}">
+                </div>
+                <div class="col-auto">
+                    <select name="category" class="form-select">
+                        <option value="">전체 카테고리</option>
+                        {{#categories}}
+                            <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                        {{/categories}}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-secondary">필터 적용</button>
+                    <a href="/expenses/trip/{{tripId}}" class="btn btn-outline-secondary">초기화</a>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="p-3 bg-primary text-white rounded shadow-sm">
+                <h5 class="mb-0">총 지출: <span class="format-money">{{totalPrice}}</span>원</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- 카테고리별 요약 -->
+    {{#summary.0}}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-light border-0">
+                <div class="card-body py-2">
+                    <small class="text-muted fw-bold me-3">카테고리별 요약:</small>
+                    {{#summary}}
+                        <span class="badge bg-white text-dark border me-2">{{key}}: <span class="format-money">{{value}}</span>원</span>
+                    {{/summary}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/summary.0}}
 
     <div class="card shadow-sm mb-5">
         <div class="card-body p-0">
@@ -9,30 +63,35 @@
                 <thead class="table-light">
                 <tr>
                     <th>날짜</th>
+                    <th>카테고리</th>
                     <th>항목</th>
                     <th>결제자</th>
                     <th>금액</th>
-                    <th>관리</th>
+                    {{^isSettled}}<th>관리</th>{{/isSettled}}
                 </tr>
                 </thead>
                 <tbody>
                 {{#expenses}}
                     <tr>
                         <td>{{travelDate}}</td>
+                        <td><span class="badge bg-info text-dark">{{category}}</span></td>
                         <td>{{title}}</td>
                         <td>{{payer}}</td>
-                        <td>{{price}}원</td>
+                        <td class="fw-bold"><span class="format-money">{{price}}</span>원</td>
+                        {{^isSettled}}
                         <td>
+                            <a href="/expenses/{{id}}/edit" class="btn btn-outline-primary btn-sm me-1">수정</a>
                             <form action="/expenses/{{id}}/delete" method="post" class="d-inline">
                                 <input type="hidden" name="tripId" value="{{tripId}}">
-                                <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
                             </form>
                         </td>
+                        {{/isSettled}}
                     </tr>
                 {{/expenses}}
                 {{^expenses}}
                     <tr>
-                        <td colspan="5" class="py-4 text-muted">지출 내역이 없습니다.</td>
+                        <td colspan="{{#isSettled}}5{{/isSettled}}{{^isSettled}}6{{/isSettled}}" class="py-4 text-muted">지출 내역이 없습니다.</td>
                     </tr>
                 {{/expenses}}
                 </tbody>
@@ -40,29 +99,64 @@
         </div>
     </div>
 
+    {{^isSettled}}
     <h3 class="mb-3 fw-bold">지출 등록</h3>
     <div class="card shadow-sm bg-light">
         <div class="card-body p-4">
             <form action="/expenses/create" method="post" class="row g-3">
                 <input type="hidden" name="tripId" value="{{tripId}}">
 
-                <div class="col-md-3">
+                <div class="col-md-2">
+                    <label class="form-label small text-secondary">날짜</label>
                     <input type="date" name="travelDate" class="form-control" value="{{#selectedDate}}{{selectedDate}}{{/selectedDate}}" required>
                 </div>
+                <div class="col-md-2">
+                    <label class="form-label small text-secondary">카테고리</label>
+                    <select name="category" class="form-select" required>
+                        <option value="" disabled selected>선택</option>
+                        {{#categories}}
+                            <option value="{{name}}">{{name}}</option>
+                        {{/categories}}
+                    </select>
+                </div>
                 <div class="col-md-3">
-                    <input type="text" name="title" class="form-control" placeholder="항목" required>
+                    <label class="form-label small text-secondary">항목(사용처)</label>
+                    <input type="text" name="title" class="form-control" placeholder="예: 점심 식사" required>
                 </div>
                 <div class="col-md-2">
-                    <input type="text" name="payer" class="form-control" placeholder="결제자" required>
+                    <label class="form-label small text-secondary">결제자</label>
+                    <input type="text" name="payer" class="form-control" placeholder="이름" required>
                 </div>
-                <div class="col-md-3">
-                    <input type="number" name="price" class="form-control" placeholder="금액" required>
+                <div class="col-md-2">
+                    <label class="form-label small text-secondary">금액</label>
+                    <input type="number" name="price" class="form-control" placeholder="0" required>
                 </div>
-                <div class="col-md-1 d-grid">
+                <div class="col-md-1 d-grid align-items-end">
                     <button type="submit" class="btn btn-primary">등록</button>
                 </div>
             </form>
         </div>
     </div>
+    {{/isSettled}}
+    {{#isSettled}}
+    <div class="alert alert-success shadow-sm">
+        <i class="bi bi-check-circle-fill"></i> 이 여행은 정산이 완료되었습니다. 내역 수정이 필요하시면 정산 페이지에서 <strong>정산 취소</strong>를 눌러주세요.
+    </div>
+    {{/isSettled}}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        document.querySelectorAll('.format-money').forEach(function(el) {
+            const val = parseInt(el.innerText.replace(/,/g, ''));
+            if (!isNaN(val)) {
+                el.innerText = formatNumber(val);
+            }
+        });
+    });
+</script>
+
 {{> layouts/footer}}

@@ -22,6 +22,9 @@ public class Trip {
     private LocalDate startDate;
     private LocalDate endDate;
     private String description;
+    
+    @Column(nullable = false)
+    private boolean settled = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

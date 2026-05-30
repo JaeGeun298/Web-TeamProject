@@ -67,6 +67,12 @@ public class TripService {
         tripRepository.deleteById(id);
     }
 
+    // 정산 상태 토글
+    public void toggleSettled(Long id, boolean settled) {
+        Trip trip = getTrip(id);
+        trip.setSettled(settled);
+    }
+
     // 멤버 초대
     public void addMember(Long tripId, UserEntity user) {
         Trip trip = getTrip(tripId);

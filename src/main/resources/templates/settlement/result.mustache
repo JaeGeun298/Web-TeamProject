@@ -2,44 +2,149 @@
 {{> layouts/gnb}}
 
 <div class="container mt-5 mb-5">
-    <h2 class="mb-4 fw-bold">정산 결과</h2>
-
-    <div class="d-flex justify-content-end mb-3">
-        <form action="/settlements/trip/{{tripId}}" method="get" class="d-flex align-items-center">
-            <label for="totalMembers" class="me-2 fw-bold text-nowrap">정산 인원 수:</label>
-            <input type="number" id="totalMembers" name="totalMembers" class="form-control me-2" style="width: 80px;" value="{{totalMembers}}" min="1" required>
-            <button type="submit" class="btn btn-primary text-nowrap">적용</button>
-        </form>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">정산 결과</h2>
+        {{#isSettled}}
+            <span class="badge bg-success fs-5 px-3 py-2">정산 완료됨</span>
+        {{/isSettled}}
+        {{^isSettled}}
+            <span class="badge bg-warning text-dark fs-5 px-3 py-2">정산 진행 중</span>
+        {{/isSettled}}
     </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body text-center">
-            <h4 class="mb-3">총 지출: {{totalExpense}}원</h4>
-            <h4 class="text-primary fw-bold">1인당 부담 금액: {{perPerson}}원</h4>
+    <!-- 설정 및 요약 -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">정산 설정</h5>
+                    <form action="/settlements/trip/{{tripId}}" method="get" class="d-flex align-items-center">
+                        <label for="totalMembers" class="me-2 fw-bold text-nowrap">정산 인원 수:</label>
+                        <input type="number" id="totalMembers" name="totalMembers" class="form-control me-2" style="width: 80px;" value="{{totalMembers}}" min="1" {{#isSettled}}disabled{{/isSettled}} required>
+                        {{^isSettled}}
+                            <button type="submit" class="btn btn-primary text-nowrap">적용</button>
+                        {{/isSettled}}
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100 bg-light">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <h5 class="text-muted mb-1">총 지출: <span class="format-money">{{totalExpense}}</span>원</h5>
+                    <h3 class="text-primary fw-bold mb-0">1인당: <span class="format-money">{{perPerson}}</span>원</h3>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-light">
+    <!-- 카테고리별 요약 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">카테고리별 지출 통계</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {{#categorySummaries}}
+                    <div class="col-md-4 mb-2">
+                        <div class="d-flex justify-content-between border-bottom pb-1">
+                            <span class="text-secondary">{{key}}</span>
+                            <span class="fw-bold"><span class="format-money">{{value}}</span>원</span>
+                        </div>
+                    </div>
+                {{/categorySummaries}}
+            </div>
+        </div>
+    </div>
+
+    <!-- 결제자별 정산 내역 -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-light py-3">
             <h5 class="mb-0 fw-bold">결제자별 정산 내역</h5>
         </div>
         <ul class="list-group list-group-flush">
             {{#settlements}}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                     <span class="fw-bold">{{key}}</span>
-                    <span>{{value}}원</span>
+                    <span class="fs-5 {{#value}}text-primary{{/value}} {{^value}}text-danger{{/value}} fw-bold">
+                        {{#value}}<span class="format-money">{{value}}</span>원{{/value}}
+                        {{^value}}0원{{/value}}
+                    </span>
                 </li>
             {{/settlements}}
         </ul>
-        <div class="card-footer text-muted text-center" style="font-size: 0.9em;">
-            양수(+)는 받아야 할 금액, 음수(-)는 내야 할 금액을 의미합니다.<br>
-            결제 내역이 없는 멤버는 1인당 부담 금액만큼 내야 합니다.
+        <div class="card-footer text-muted text-center py-3" style="font-size: 0.9em;">
+            <i class="bi bi-info-circle"></i> 양수(+)는 받아야 할 금액, 음수(-)는 내야 할 금액을 의미합니다.
         </div>
     </div>
 
-    <div class="text-center mt-4">
-        <a href="/expenses/trip/{{tripId}}" class="btn btn-secondary px-4">지출 목록으로</a>
+    <!-- 전체 지출 내역 (수정/삭제 가능) -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">상세 지출 내역</h5>
+            <small class="text-muted">전체 {{allExpenses.size}}건</small>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 text-center align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>날짜</th>
+                        <th>카테고리</th>
+                        <th>항목</th>
+                        <th>결제자</th>
+                        <th>금액</th>
+                        {{^isSettled}}<th>관리</th>{{/isSettled}}
+                    </tr>
+                </thead>
+                <tbody>
+                {{#allExpenses}}
+                    <tr>
+                        <td>{{travelDate}}</td>
+                        <td><span class="badge bg-info text-dark">{{category}}</span></td>
+                        <td>{{title}}</td>
+                        <td>{{payer}}</td>
+                        <td class="fw-bold"><span class="format-money">{{price}}</span>원</td>
+                        {{^isSettled}}
+                        <td>
+                            <a href="/expenses/{{id}}/edit" class="btn btn-outline-primary btn-sm">수정</a>
+                        </td>
+                        {{/isSettled}}
+                    </tr>
+                {{/allExpenses}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3">
+        <a href="/trips" class="btn btn-primary px-4">전체 여행 목록으로</a>
+        <a href="/expenses/trip/{{tripId}}" class="btn btn-outline-secondary px-4">지출 관리로 돌아가기</a>
+        
+        {{#isSettled}}
+            <form action="/settlements/trip/{{tripId}}/unsettle" method="post">
+                <button type="submit" class="btn btn-warning px-4">정산 취소 (수정 가능하게)</button>
+            </form>
+        {{/isSettled}}
+        {{^isSettled}}
+            <form action="/settlements/trip/{{tripId}}/settle" method="post">
+                <button type="submit" class="btn btn-success px-4" onclick="return confirm('정산을 완료하시겠습니까? 완료 후에는 수정이 제한됩니다.')">정산 완료하기</button>
+            </form>
+        {{/isSettled}}
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        document.querySelectorAll('.format-money').forEach(function(el) {
+            const val = parseInt(el.innerText.replace(/,/g, ''));
+            if (!isNaN(val)) {
+                el.innerText = formatNumber(val);
+            }
+        });
+    });
+</script>
 
 {{> layouts/footer}}

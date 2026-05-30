@@ -1,0 +1,70 @@
+{{> layouts/header}}
+{{> layouts/gnb}}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white p-3">
+                    <h4 class="mb-0 fw-bold">지출 내역 수정</h4>
+                </div>
+                <div class="card-body p-4">
+                    {{#expense}}
+                    <form action="/expenses/{{id}}/update" method="post" class="row g-3">
+                        <input type="hidden" name="tripId" value="{{tripId}}">
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold">날짜</label>
+                            <input type="date" name="travelDate" class="form-control" value="{{travelDate}}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold">카테고리</label>
+                            <select name="category" class="form-select" required>
+                                {{#categories}}
+                                <option value="{{.}}">{{.}}</option>
+                                {{/categories}}
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold">항목(사용처)</label>
+                            <input type="text" name="title" class="form-control" value="{{title}}" placeholder="예: 점심 식사" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold">결제자</label>
+                            <input type="text" name="payer" class="form-control" value="{{payer}}" placeholder="이름" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold">금액</label>
+                            <div class="input-group">
+                                <input type="number" name="price" class="form-control" value="{{price}}" placeholder="0" required>
+                                <span class="input-group-text">원</span>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex justify-content-between">
+                            <a href="/expenses/trip/{{tripId}}" class="btn btn-outline-secondary px-4">취소</a>
+                            <button type="submit" class="btn btn-primary px-4">저장하기</button>
+                        </div>
+                    </form>
+                    {{/expense}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 카테고리 초기값 설정을 위한 스크립트
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentCategory = "{{expense.category}}";
+        const select = document.querySelector('select[name="category"]');
+        if (select && currentCategory) {
+            select.value = currentCategory;
+        }
+    });
+</script>
+
+{{> layouts/footer}}

@@ -20,12 +20,16 @@ public class SettlementService {
     public Map<String, Object> calculateSettlement(Long tripId, int totalMembers) {
         List<Expense> expenses = expenseRepository.findByTripId(tripId);
         Map<String, Integer> payerTotals = new HashMap<>();
+        Map<String, Integer> categoryTotals = new HashMap<>();
         int totalExpense = 0;
 
         for (Expense expense : expenses) {
             int price = expense.getPrice();
             totalExpense += price;
             payerTotals.put(expense.getPayer(), payerTotals.getOrDefault(expense.getPayer(), 0) + price);
+            
+            String cat = expense.getCategory() != null ? expense.getCategory() : "기타";
+            categoryTotals.put(cat, categoryTotals.getOrDefault(cat, 0) + price);
         }
 
         int perPerson = totalMembers > 0 ? totalExpense / totalMembers : 0;
@@ -39,6 +43,9 @@ public class SettlementService {
         result.put("totalExpense", totalExpense);
         result.put("perPerson", perPerson);
         result.put("balances", balances);
+        result.put("categoryTotals", categoryTotals);
+        result.put("expenses", expenses);
+        result.put("payerCount", payerTotals.size());
 
         return result;
     }
