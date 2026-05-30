@@ -1,0 +1,28 @@
+{{> layouts/header}}
+
+<h2>{{trip.title}}</h2>
+<p>{{trip.startDate}} ~ {{trip.endDate}}</p>
+<p>{{trip.description}}</p>
+
+<a href="/trips/{{trip.id}}/edit">수정</a>
+<form action="/trips/{{trip.id}}/delete" method="post">
+    <button type="submit">삭제</button>
+</form>
+
+<h3>참여 멤버</h3>
+{{#members}}
+    <div>
+        <span>{{user.username}}</span>
+        <form action="/trips/{{trip.id}}/members/{{id}}/delete" method="post">
+            <button type="submit">탈퇴</button>
+        </form>
+    </div>
+{{/members}}
+
+<h3>멤버 초대</h3>
+<form action="/trips/{{trip.id}}/members" method="post">
+    <input type="text" name="username" placeholder="유저 아이디 입력"/>
+    <button type="submit">초대</button>
+</form>
+
+{{> layouts/footer}}

@@ -1,0 +1,23 @@
+{{> layouts/header}}
+
+<h2>내 여행 목록</h2>
+<a href="/trips/new">+ 여행 추가</a>
+
+{{#trips}}
+    <div>
+        <h3>{{title}}</h3>
+        <p>{{startDate}} ~ {{endDate}}</p>
+        <p>{{description}}</p>
+        <a href="/trips/{{id}}">상세보기</a>
+        <a href="/trips/{{id}}/edit">수정</a>
+        <form action="/trips/{{id}}/delete" method="post">
+            <button type="submit">삭제</button>
+        </form>
+    </div>
+{{/trips}}
+
+{{^trips}}
+    <p>여행이 없습니다.</p>
+{{/trips}}
+
+{{> layouts/footer}}
