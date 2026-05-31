@@ -30,6 +30,7 @@ public class ExpenseController {
         return session.getAttribute("loginUser") == null;
     }
 
+    // 지출 내역 목록 페이지
     @GetMapping("/trip/{tripId}")
     public String getExpenses(@PathVariable Long tripId,
                               @RequestParam(required = false) String date,
@@ -98,12 +99,14 @@ public class ExpenseController {
         if (isNotLoggedIn(session)) return "redirect:/auth/login";
 
         Trip trip = tripService.getTrip(expense.getTripId());
+        // 정산 완료 시 데이터 무결성 보호를 위한 수정 제한 로직
         if (trip.isSettled()) return "redirect:/expenses/trip/" + expense.getTripId();
         
         expenseRepository.save(expense);
         return "redirect:/expenses/trip/" + expense.getTripId() + "?date=" + (expense.getTravelDate() != null ? expense.getTravelDate() : "");
     }
 
+    // 지출 내역 수정 페이지
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model, HttpSession session) {
         if (isNotLoggedIn(session)) return "redirect:/auth/login";

@@ -4,8 +4,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.*;
 
 @Entity
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Expense {
 
     @Id
@@ -18,19 +22,4 @@ public class Expense {
     private String travelDate;
     private String payer;
     private String category;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Long getTripId() { return tripId; }
-    public void setTripId(Long tripId) { this.tripId = tripId; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public Integer getPrice() { return price; }
-    public void setPrice(Integer price) { this.price = price; }
-    public String getTravelDate() { return travelDate; }
-    public void setTravelDate(String travelDate) { this.travelDate = travelDate; }
-    public String getPayer() { return payer; }
-    public void setPayer(String payer) { this.payer = payer; }
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
 }

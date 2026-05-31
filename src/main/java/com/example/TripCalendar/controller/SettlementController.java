@@ -29,6 +29,7 @@ public class SettlementController {
         this.tripService = tripService;
     }
 
+    // 정산 결과 페이지
     @GetMapping("/trip/{tripId}")
     public String getSettlementResult(@PathVariable Long tripId,
                                       @RequestParam(required = false) Integer totalMembers,
@@ -38,20 +39,16 @@ public class SettlementController {
         String sessionKey = "trip_" + tripId + "_members";
         Trip trip = tripService.getTrip(tripId);
         boolean isSettled = trip.isSettled();
-
-        // Calculate with dummy/temporary count to get payerCount first if needed, 
-        // or just calculate settlement twice if necessary.
-        // Actually, we can get payerCount from the service result.
         
+        // 정산 설정 인원수 세션(Session) 관리
         if (totalMembers == null) {
             Integer cachedMembers = (Integer) session.getAttribute(sessionKey);
             if (cachedMembers != null) {
                 totalMembers = cachedMembers;
             } else {
-                // If no session and no param, use payerCount as default
                 Map<String, Object> initialData = settlementService.calculateSettlement(tripId, 1);
                 int payerCount = (int) initialData.get("payerCount");
-                totalMembers = (payerCount > 0) ? payerCount : 1;
+                totalMembers = (payerCount > 0) ? payerCount : 1; 
                 session.setAttribute(sessionKey, totalMembers);
             }
         } else {
@@ -67,6 +64,10 @@ public class SettlementController {
                     Map<String, Object> map = new HashMap<>();
                     map.put("key", entry.getKey());
                     map.put("value", entry.getValue());
+                    // UI 조건부 출력을 위한 금액 상태 데이터 가공
+                    map.put("isPositive", entry.getValue() > 0);
+                    map.put("isNegative", entry.getValue() < 0);
+                    map.put("isZero", entry.getValue() == 0);
                     return map;
                 }).collect(Collectors.toList());
 
