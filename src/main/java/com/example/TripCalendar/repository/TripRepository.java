@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface TripRepository extends JpaRepository<Trip, Long> {
     List<Trip> findByUser(UserEntity user);
+    List<Trip> findByTripMembers_User(UserEntity user);
 }

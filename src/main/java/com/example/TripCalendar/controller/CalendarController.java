@@ -28,7 +28,7 @@ public class CalendarController {
         }
         model.addAttribute("loginUser", loginUser);
 
-        List<Trip> trips = tripRepository.findByUser(loginUser);
+        List<Trip> trips = tripRepository.findByTripMembers_User(loginUser);
         if (!trips.isEmpty()) {
             model.addAttribute("tripId", trips.get(0).getId());
         }
@@ -41,14 +41,20 @@ public class CalendarController {
     @ResponseBody
     public List<CalendarTripDTO> calendarApi(HttpSession session) {
         UserEntity loginUser = (UserEntity) session.getAttribute("loginUser");
+
         if (loginUser == null) {
             return List.of();
         }
-        List<Trip> trips = tripRepository.findByUser(loginUser);
+
+        List<Trip> trips = tripRepository.findByTripMembers_User(loginUser);
+
         return trips.stream()
                 .filter(t -> t.getStartDate() != null && t.getEndDate() != null)
-                .map(t -> new CalendarTripDTO(t.getId(), t.getTitle(),
-                        t.getStartDate().toString(), t.getEndDate().toString()))
+                .map(t -> new CalendarTripDTO(
+                        t.getId(),
+                        t.getTitle(),
+                        t.getStartDate().toString(),
+                        t.getEndDate().toString()))
                 .collect(Collectors.toList());
     }
 }
