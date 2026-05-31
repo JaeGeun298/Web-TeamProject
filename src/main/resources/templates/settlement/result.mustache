@@ -12,7 +12,6 @@
         {{/isSettled}}
     </div>
 
-    <!-- 설정 및 요약 -->
     <div class="row mb-4">
         <div class="col-md-6">
             <div class="card shadow-sm h-100">
@@ -38,7 +37,6 @@
         </div>
     </div>
 
-    <!-- 카테고리별 요약 -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-white py-3">
             <h5 class="mb-0 fw-bold">카테고리별 지출 통계</h5>
@@ -57,7 +55,6 @@
         </div>
     </div>
 
-    <!-- 결제자별 정산 내역 -->
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-light py-3">
             <h5 class="mb-0 fw-bold">결제자별 정산 내역</h5>
@@ -66,9 +63,8 @@
             {{#settlements}}
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                     <span class="fw-bold">{{key}}</span>
-                    <span class="fs-5 {{#value}}text-primary{{/value}} {{^value}}text-danger{{/value}} fw-bold">
-                        {{#value}}<span class="format-money">{{value}}</span>원{{/value}}
-                        {{^value}}0원{{/value}}
+                    <span class="fs-5 fw-bold {{#isPositive}}text-primary{{/isPositive}} {{#isNegative}}text-danger{{/isNegative}} {{#isZero}}text-muted{{/isZero}}">
+                        {{#isPositive}}+{{/isPositive}}<span class="format-money">{{value}}</span>원
                     </span>
                 </li>
             {{/settlements}}
@@ -78,7 +74,6 @@
         </div>
     </div>
 
-    <!-- 전체 지출 내역 (수정/삭제 가능) -->
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">상세 지출 내역</h5>
@@ -139,7 +134,7 @@
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
         document.querySelectorAll('.format-money').forEach(function(el) {
-            const val = parseInt(el.innerText.replace(/,/g, ''));
+            const val = parseInt(el.innerText.replace(/[^0-9-]/g, ''));
             if (!isNaN(val)) {
                 el.innerText = formatNumber(val);
             }

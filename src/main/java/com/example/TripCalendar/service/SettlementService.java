@@ -26,6 +26,7 @@ public class SettlementService {
         for (Expense expense : expenses) {
             int price = expense.getPrice();
             totalExpense += price;
+            // 결제자별·카테고리별 지출 통계 집계
             payerTotals.put(expense.getPayer(), payerTotals.getOrDefault(expense.getPayer(), 0) + price);
             
             String cat = expense.getCategory() != null ? expense.getCategory() : "기타";
@@ -49,4 +50,5 @@ public class SettlementService {
 
         return result;
     }
+}
 }
