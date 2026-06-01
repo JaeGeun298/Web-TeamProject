@@ -39,7 +39,7 @@
             <ul class="navbar-nav ms-auto align-items-center">
                 {{#loginUser}}
                 <li class="nav-item me-2">
-                    <span class="navbar-text">{{username}}</span>
+                    <a class="nav-link text-muted" href="/auth/profile">{{username}}</a>
                 </li>
                 <li class="nav-item">
                     <form action="/auth/logout" method="post" class="d-inline m-0">

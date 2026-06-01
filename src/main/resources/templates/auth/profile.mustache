@@ -1,0 +1,36 @@
+{{>layouts/header}}
+{{>layouts/gnb}}
+
+<div style="max-width: 400px; margin: 30px auto; padding: 0 16px;">
+<h2>내 정보</h2>
+<p class="text-muted">{{loginUser.username}}</p>
+
+<hr>
+
+<h5 class="mt-3">비밀번호 변경</h5>
+
+{{#msg}}<p class="text-danger">{{msg}}</p>{{/msg}}
+{{#successMsg}}<p class="text-success">{{successMsg}}</p>{{/successMsg}}
+
+<form action="/auth/profile" method="post">
+    <div class="mb-3">
+        <label class="form-label">현재 비밀번호</label>
+        <input type="password" class="form-control" name="currentPassword" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">새 비밀번호</label>
+        <input type="password" class="form-control" name="newPassword" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">비밀번호 변경</button>
+</form>
+
+<hr class="mt-4">
+
+<h5>회원 탈퇴</h5>
+<p class="text-muted small">탈퇴 시 참여 중인 여행 멤버십과 납입 기록이 삭제됩니다.</p>
+<form action="/auth/delete" method="post" onsubmit="return confirm('정말 탈퇴하시겠습니까?')">
+    <button type="submit" class="btn btn-primary w-100">회원 탈퇴</button>
+</form>
+</div>
+
+{{>layouts/footer}}

@@ -8,4 +8,6 @@ public interface UserService {
 
     UserEntity register(RegisterDTO form);
     UserEntity login(LoginDTO form);
+    boolean updatePassword(Long userId, String currentPassword, String newPassword);
+    void deleteUser(Long userId);
 }
